@@ -30,4 +30,8 @@ contract RoadmapFeatureRequest is Swap {
     constructor(address _token) Swap(_token) {
         featureId = block.timestamp;
     }
+
+    function getNextFeatureID() public view returns (uint256) {
+        return featureId + 1;
+    }
 }
