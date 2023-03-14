@@ -10,7 +10,7 @@ contract Swap {
     address public tokenAddress;
 
     constructor(address _token) payable {
-        rate = 10;
+        rate = 100;
         owner = msg.sender;
         tokenAddress = _token;
         token = RFRToken(address(tokenAddress));
@@ -30,8 +30,8 @@ contract Swap {
 
     function sell(uint256 amount) public returns (bool) {
         require(amount > 0, "Amount required to sell tokens");
+        token.transferFrom(msg.sender, payable(address(this)), amount);
         uint256 amountConverted = amount / rate;
-        token.transferFrom(msg.sender, payable(address(this)), amountConverted);
         payable(msg.sender).transfer(amountConverted);
         return true;
     }
