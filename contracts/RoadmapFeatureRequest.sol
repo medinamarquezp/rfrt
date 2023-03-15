@@ -48,7 +48,7 @@ contract RoadmapFeatureRequest is Swap {
     function createFeatureRequest(
         string memory _title,
         string memory _description
-    ) public returns (bool) {
+    ) public returns (uint256) {
         require(
             token.balanceOf(msg.sender) > 0,
             "You must have some RFRT tokens in your wallet"
@@ -66,6 +66,6 @@ contract RoadmapFeatureRequest is Swap {
         });
         features[_id] = feature;
         roadmap[Status.Pending].push(_id);
-        return true;
+        return _id;
     }
 }
