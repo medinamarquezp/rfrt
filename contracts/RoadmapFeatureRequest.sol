@@ -71,6 +71,29 @@ contract RoadmapFeatureRequest is Swap {
         return _id;
     }
 
+    function createInternalFeatureRequest(
+        string memory _title,
+        string memory _description,
+        Status _status,
+        uint256 _votes,
+        uint256 _createdAt
+    ) public onlyadmins returns (uint256) {
+        uint256 _id = getNextFeatureID();
+        FeatureRequest memory feature = FeatureRequest({
+            id: _id,
+            owner: msg.sender,
+            title: _title,
+            description: _description,
+            status: _status,
+            votes: _votes,
+            createdAt: _createdAt,
+            rejectedAt: 0
+        });
+        features[_id] = feature;
+        roadmap[_status].push(_id);
+        return _id;
+    }
+
     function vote(uint256 _featureId) public payable returns (bool) {
         require(msg.value == 1 ether, "Votes costs 1 RFRT");
         features[_featureId].votes += 1;
@@ -82,6 +105,25 @@ contract RoadmapFeatureRequest is Swap {
         Status _status
     ) public onlyadmins returns (bool) {
         features[_featureId].status = _status;
+        return true;
+    }
+
+    function rejectsFeatureRequest(
+        uint256 _featureId
+    ) public onlyadmins returns (bool) {
+        FeatureRequest memory feature = features[_featureId];
+        require(
+            feature.votes == 0,
+            "Cannot rejects feature request with votes"
+        );
+        uint256 featureLimitDate = feature.createdAt + 30 days;
+        require(
+            featureLimitDate <= block.timestamp,
+            "Feature request not expired yet"
+        );
+        feature.status = Status.Rejected;
+        feature.rejectedAt = block.timestamp;
+        features[_featureId] = feature;
         return true;
     }
 

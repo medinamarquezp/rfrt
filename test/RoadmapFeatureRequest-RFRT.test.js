@@ -112,4 +112,54 @@ contract("RoadmapFeatureRequest RFRT methods", (accounts) => {
       "Feature updated should have status 1"
     );
   });
+
+  it("Should validate voted features rejections", async () => {
+    const feature = await instance.getLastPendingFeature();
+    await truffleAssert.fails(
+      instance.rejectsFeatureRequest(feature.id),
+      truffleAssert.ErrorType.REVERT,
+      "Cannot rejects feature request with votes"
+    );
+  });
+
+  it("Should validate not expired features rejections", async () => {
+    const title = "Not expired feature";
+    const description = "Not expired feature description";
+    await instance.createFeatureRequest(title, description, {
+      from: accounts[1],
+    });
+    const feature = await instance.getLastPendingFeature();
+    await truffleAssert.fails(
+      instance.rejectsFeatureRequest(feature.id),
+      truffleAssert.ErrorType.REVERT,
+      "Feature request not expired yet"
+    );
+  });
+  it("Should rejects a feature expired without votes", async () => {
+    const title = "Expired feature";
+    const description = "Expired feature description";
+    const status = 0;
+    const votes = 0;
+    const createdAt = new Date("2020-01-01").getTime() / 1000;
+    await instance.createInternalFeatureRequest(
+      title,
+      description,
+      status,
+      votes,
+      createdAt
+    );
+    const feature = await instance.getLastPendingFeature();
+    await instance.rejectsFeatureRequest(feature.id);
+    const rejectedFeature = await instance.features(feature.id);
+    assert.equal(
+      rejectedFeature.status.toString(),
+      "4",
+      "Feature status should be rejected (4)"
+    );
+    assert.equal(
+      Number(rejectedFeature.rejectedAt.toString()) > 0,
+      true,
+      "Feature rejectedAt should not be 0"
+    );
+  });
 });
