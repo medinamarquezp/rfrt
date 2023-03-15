@@ -86,4 +86,30 @@ contract("RoadmapFeatureRequest RFRT methods", (accounts) => {
     const adminUpdated = await instance.admins(accounts[3]);
     assert.equal(adminUpdated, false, "Account should not to be an admin");
   });
+
+  it("Should validate feature request status changes", async () => {
+    const feature = await instance.getLastPendingFeature();
+    await truffleAssert.fails(
+      instance.changeFeatureRequestStatus(feature.id, 1, {
+        from: accounts[4],
+      }),
+      truffleAssert.ErrorType.REVERT,
+      "This operation is only available for admins"
+    );
+  });
+
+  it("Should update feature request status", async () => {
+    const feature = await instance.getLastPendingFeature();
+    const { receipt } = await instance.changeFeatureRequestStatus(
+      feature.id,
+      1
+    );
+    assert.equal(receipt.status, true, "Receipt status should be truthy");
+    const featureUpdated = await instance.getLastPendingFeature();
+    assert.equal(
+      featureUpdated.status,
+      "1",
+      "Feature updated should have status 1"
+    );
+  });
 });

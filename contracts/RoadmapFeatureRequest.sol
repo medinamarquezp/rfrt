@@ -77,11 +77,27 @@ contract RoadmapFeatureRequest is Swap {
         return true;
     }
 
+    function changeFeatureRequestStatus(
+        uint256 _featureId,
+        Status _status
+    ) public onlyadmins returns (bool) {
+        features[_featureId].status = _status;
+        return true;
+    }
+
     function manageAdmins(
         address _userAddress,
         bool _status
     ) public onlyowner returns (bool) {
         admins[_userAddress] = _status;
         return true;
+    }
+
+    modifier onlyadmins() {
+        require(
+            admins[msg.sender] == true,
+            "This operation is only available for admins"
+        );
+        _;
     }
 }
