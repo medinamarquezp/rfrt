@@ -45,4 +45,22 @@ contract("RoadmapFeatureRequest RFRT methods", (accounts) => {
       "Feature description should match"
     );
   });
+  it("Should validate votes cost", async () => {
+    const feature = await instance.getLastPendingFeature();
+    await truffleAssert.fails(
+      instance.vote(feature.id),
+      truffleAssert.ErrorType.REVERT,
+      "Votes costs 1 RFRT"
+    );
+  });
+  it("Should vote for a feature request", async () => {
+    const feature = await instance.getLastPendingFeature();
+    const { receipt } = await instance.vote(feature.id, {
+      from: accounts[1],
+      value: web3.utils.toWei("1", "ether"),
+    });
+    assert.equal(receipt.status, true, "Receipt status should be truthy");
+    const featureUpdated = await instance.getLastPendingFeature();
+    assert.equal(featureUpdated.votes, "1", "Feature votes should be 1");
+  });
 });

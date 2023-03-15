@@ -68,4 +68,10 @@ contract RoadmapFeatureRequest is Swap {
         roadmap[Status.Pending].push(_id);
         return _id;
     }
+
+    function vote(uint256 _featureId) public payable returns (bool) {
+        require(msg.value == 1 ether, "Votes costs 1 RFRT");
+        features[_featureId].votes += 1;
+        return true;
+    }
 }
