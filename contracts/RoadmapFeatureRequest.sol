@@ -24,11 +24,13 @@ contract RoadmapFeatureRequest is Swap {
     }
 
     uint256 featureId;
+    mapping(address => bool) public admins;
     mapping(uint256 => FeatureRequest) public features;
     mapping(Status => uint256[]) public roadmap;
 
     constructor(address _token) Swap(_token) {
         featureId = block.timestamp;
+        admins[msg.sender] = true;
     }
 
     function getNextFeatureID() internal view returns (uint256) {
@@ -72,6 +74,14 @@ contract RoadmapFeatureRequest is Swap {
     function vote(uint256 _featureId) public payable returns (bool) {
         require(msg.value == 1 ether, "Votes costs 1 RFRT");
         features[_featureId].votes += 1;
+        return true;
+    }
+
+    function manageAdmins(
+        address _userAddress,
+        bool _status
+    ) public onlyowner returns (bool) {
+        admins[_userAddress] = _status;
         return true;
     }
 }

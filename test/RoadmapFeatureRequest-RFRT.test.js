@@ -63,4 +63,27 @@ contract("RoadmapFeatureRequest RFRT methods", (accounts) => {
     const featureUpdated = await instance.getLastPendingFeature();
     assert.equal(featureUpdated.votes, "1", "Feature votes should be 1");
   });
+
+  it("Should validate admin management", async () => {
+    await truffleAssert.fails(
+      instance.manageAdmins(accounts[3], true, {
+        from: accounts[4],
+      }),
+      truffleAssert.ErrorType.REVERT,
+      "This operation is only available for contract owner"
+    );
+  });
+
+  it("Should manage admin accounts", async () => {
+    const isAdmin = await instance.admins(accounts[3]);
+    assert.equal(isAdmin, false, "Account should not to be an admin");
+    const { receipt: first } = await instance.manageAdmins(accounts[3], true);
+    assert.equal(first.status, true, "Receipt status should be truthy");
+    const admin = await instance.admins(accounts[3]);
+    assert.equal(admin, true, "Account should be an admin");
+    const { receipt: second } = await instance.manageAdmins(accounts[3], false);
+    assert.equal(second.status, true, "Receipt status should be truthy");
+    const adminUpdated = await instance.admins(accounts[3]);
+    assert.equal(adminUpdated, false, "Account should not to be an admin");
+  });
 });
