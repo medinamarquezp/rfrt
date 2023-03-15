@@ -25,7 +25,7 @@ contract RoadmapFeatureRequest is Swap {
 
     uint256 featureId;
     mapping(uint256 => FeatureRequest) public features;
-    mapping(Status => FeatureRequest[]) public roadmap;
+    mapping(Status => uint256[]) public roadmap;
 
     constructor(address _token) Swap(_token) {
         featureId = block.timestamp;
@@ -40,8 +40,9 @@ contract RoadmapFeatureRequest is Swap {
         view
         returns (FeatureRequest memory)
     {
-        uint256 lastIndex = roadmap[Status.Pending].length - 1;
-        return roadmap[Status.Pending][lastIndex];
+        uint256 _lastIndex = roadmap[Status.Pending].length - 1;
+        uint256 _featureId = roadmap[Status.Pending][_lastIndex];
+        return features[_featureId];
     }
 
     function createFeatureRequest(
@@ -64,7 +65,7 @@ contract RoadmapFeatureRequest is Swap {
             rejectedAt: 0
         });
         features[_id] = feature;
-        roadmap[Status.Pending].push(feature);
+        roadmap[Status.Pending].push(_id);
         return true;
     }
 }
