@@ -1,4 +1,4 @@
-# 🪙 Roadmap Feature Request Token
+# ✅ Roadmap Feature Request Token
 
 RFRT or Roadmap Feature Request Token is an utility token that provides to its owners the capability to be part of the roadmap of the projects of an organization. With this token, users will be able to add new feature request to roadmap or vote existing ones. Most voted feature requests will be promoted to be done sooner. This project also allows swapping between RFRT and ETH.
 
