@@ -31,7 +31,7 @@ contract RoadmapFeatureRequest is Swap {
         featureId = block.timestamp;
     }
 
-    function getNextFeatureID() public view returns (uint256) {
+    function getNextFeatureID() internal view returns (uint256) {
         return featureId + 1;
     }
 
