@@ -14,5 +14,8 @@
   "homepage": "https://github.com/medinamarquezp/rfrt#readme",
   "dependencies": {
     "@openzeppelin/contracts": "^4.8.2"
+  },
+  "devDependencies": {
+    "truffle-assertions": "^0.9.2"
   }
 }

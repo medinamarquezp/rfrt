@@ -34,4 +34,37 @@ contract RoadmapFeatureRequest is Swap {
     function getNextFeatureID() public view returns (uint256) {
         return featureId + 1;
     }
+
+    function getLastPendingFeature()
+        public
+        view
+        returns (FeatureRequest memory)
+    {
+        uint256 lastIndex = roadmap[Status.Pending].length - 1;
+        return roadmap[Status.Pending][lastIndex];
+    }
+
+    function createFeatureRequest(
+        string memory _title,
+        string memory _description
+    ) public returns (bool) {
+        require(
+            token.balanceOf(msg.sender) > 0,
+            "You must have some RFRT tokens in your wallet"
+        );
+        uint256 _id = getNextFeatureID();
+        FeatureRequest memory feature = FeatureRequest({
+            id: _id,
+            owner: msg.sender,
+            title: _title,
+            description: _description,
+            status: Status.Pending,
+            votes: 0,
+            createdAt: block.timestamp,
+            rejectedAt: 0
+        });
+        features[_id] = feature;
+        roadmap[Status.Pending].push(feature);
+        return true;
+    }
 }
